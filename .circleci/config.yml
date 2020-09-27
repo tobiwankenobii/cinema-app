@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run:
         name: Show current branch
-        command: echo ${CURRENT_BRANCH}
+        command: echo ${CIRCLE_BRANCH}
       - restore_cache:
         keys:
           - app-{{ checksum "package.json" }}
@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run:
         name: Show current branch
-        command: echo ${CURRENT_BRANCH}
+        command: echo ${CIRCLE_BRANCH}
       - run:
         name: Installing AWS CLI
         working_directory: /
@@ -50,10 +50,10 @@ jobs:
       - run:
         name: Deploy Frontend to S3
         command: |
-          if [ "${CURRENT BRANCH}" == "production" ]
+          if [ "${CIRCLE_BRANCH}" == "production" ]
           then 
             aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_PROD_BUCKET} --delete
-          elif [ "${CURRENT BRANCH}" == "staging" ]
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]
             aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_STAGING_BUCKET} --delete
           else
             aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_DEV_BUCKET} --delete
@@ -67,7 +67,7 @@ jobs:
       - checkout
       - run:
         name: Show current branch
-        command: echo ${CURRENT_BRANCH}
+        command: echo ${CIRCLE_BRANCH}
       - run:
         name: Installing AWS CLI
         working_directory: /
@@ -87,10 +87,10 @@ jobs:
         name: Deploy Frontend to CloudFront
         command: |
           aws configure set preview.cloudfront true
-          if [ "${CURRENT BRANCH}" == "production" ]
+          if [ "${CIRCLE_BRANCH}" == "production" ]
           then 
             aws cloudfront create-invalidation --distribution-id ${PROD_DISTRIBUTION_ID} --paths /\*
-          elif [ "${CURRENT BRANCH}" == "staging" ]
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]
             aws cloudfront create-invalidation --distribution-id ${STAGING_DISTRIBUTION_ID} --paths /\*
           else
             aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
