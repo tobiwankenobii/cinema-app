@@ -11,7 +11,7 @@ jobs:
         name: Show current branch
         command: echo ${CURRENT_BRANCH}
       - restore_cache:
-        key:
+        keys:
           - app-{{ checksum "package.json" }}
           - app-
       - run:
@@ -106,7 +106,7 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - dev
                 - staging
                 - production 
       - deploy_to_cloudfront:
@@ -115,6 +115,6 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - dev
                 - staging
                 - production 
