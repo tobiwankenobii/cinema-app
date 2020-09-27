@@ -86,7 +86,7 @@ jobs:
       - run:
         name: Deploy Frontend to CloudFront
         command: |
-          aws configure set preview.cloudfront
+          aws configure set preview.cloudfront true
           if [ "${CURRENT BRANCH}" == "production" ]
           then 
             aws cloudfront create-invalidation --distribution-id ${PROD_DISTRIBUTION_ID} --paths /\*
