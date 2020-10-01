@@ -52,6 +52,16 @@ jobs:
       - *install_dependencies
       - *save_cache
 
+  linting:
+    executor: app_executor
+    steps:
+      - checkout
+      - *show_current_branch
+      - *restore_cache
+      - run:
+          name: Run Linting
+          command: npm run lint
+
   deploy_to_s3:
     executor: app_executor
     steps:
@@ -97,9 +107,18 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy_to_s3:
+      - linting:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - dev
+                - staging
+                - production 
+      - deploy_to_s3:
+          requires:
+            - linting
           filters:
             branches:
               only:
