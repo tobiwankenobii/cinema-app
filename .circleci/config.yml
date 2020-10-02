@@ -137,6 +137,7 @@ workflows:
                 - production 
       - deploy_to_s3:
           requires:
+            - linting
             - prettier
           filters:
             branches:
