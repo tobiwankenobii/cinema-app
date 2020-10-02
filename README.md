@@ -6,5 +6,5 @@ The application is also going to be connected with CirleCI to handle linting, pr
 
 
 ### Application is deployed on the AWS S3 and it's using AWS CloudFront
-A link to the production environment is [here](d3j0y6c7ry6jpk.cloudfront.net).<br />
-And the development one is [here](d3md1rdwk1z9s8.cloudfront.net).
+A link to the production environment is [here](https://d3j0y6c7ry6jpk.cloudfront.net).<br />
+And the development one is [here](https://d3md1rdwk1z9s8.cloudfront.net).
