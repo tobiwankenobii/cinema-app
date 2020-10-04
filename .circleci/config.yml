@@ -20,17 +20,17 @@ aliases:
   - &restore_cache
     restore_cache:
       keys:
-        - app-{{ checksum "package.json" }}
+        - app-{{ checksum "frontend/package.json" }}
         - app-
   - &install_dependencies
     run:
       name: Install dependencies
-      command: npm install
+      command: cd frontend && npm install
   - &save_cache
     save_cache:
       paths:
-        - node_modules
-      key: app-{{ checksum "package.json" }}
+        - frontend/node_modules
+      key: app-{{ checksum "frontend/package.json" }}
   - &install_aws_cli
     run:
       name: Installing AWS CLI
@@ -43,6 +43,7 @@ aliases:
     run:
       name: Build Frontend
       command: |
+        cd frontend
         npm install
         npm run build
         cd build
@@ -67,7 +68,7 @@ jobs:
       - *restore_cache
       - run:
           name: Run Linting
-          command: npm run lint
+          command: cd frontend && npm run lint
 
   prettier:
     executor: app_executor
@@ -77,7 +78,7 @@ jobs:
       - *restore_cache
       - run:
           name: Run Prettier Check
-          command: npm run prettier:check
+          command: cd frontend && npm run prettier:check
 
   deploy_to_s3:
     executor: app_executor
@@ -89,14 +90,15 @@ jobs:
       - run:
           name: Deploy Frontend to S3
           command: |
+            cd frontend
             if [ "${CIRCLE_BRANCH}" == "production" ]
             then 
-              aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_PROD_BUCKET} --delete
+              aws --region ${AWS_REGION} s3 sync ~/project/frontend/build s3://${AWS_PROD_BUCKET} --delete
             elif [ "${CIRCLE_BRANCH}" == "staging" ]
             then
-              aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_STAGING_BUCKET} --delete
+              aws --region ${AWS_REGION} s3 sync ~/project/frontend/build s3://${AWS_STAGING_BUCKET} --delete
             else
-              aws --region ${AWS_REGION} s3 sync ~/project/build s3://${AWS_DEV_BUCKET} --delete
+              aws --region ${AWS_REGION} s3 sync ~/project/frontend/build s3://${AWS_DEV_BUCKET} --delete
             fi
           
   deploy_to_cloudfront:
@@ -109,6 +111,7 @@ jobs:
       - run:
           name: Deploy Frontend to CloudFront
           command: |
+            cd frontend
             aws configure set preview.cloudfront true
             if [ "${CIRCLE_BRANCH}" == "production" ]
             then 
