@@ -3,10 +3,7 @@
         "browser": true,
         "es6": true
     },
-    "extends": [
-        "plugin:react/recommended",
-        "standard"
-    ],
+    "extends": ["plugin:react/recommended", "standard"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
@@ -19,16 +16,15 @@
         "sourceType": "module"
     },
     "settings": {
-      "react": {
-        "version": "16.0"
-      }
+        "react": {
+            "version": "16.0"
+        }
     },
-    "plugins": [
-        "react"
-    ],
+    "plugins": ["react"],
     "rules": {
+        "indent": ["error", 4],
         "semi": [2, "always"],
-        "space-before-function-paren": [0, {"anonymous": "always", "named": "always"}],
+        "space-before-function-paren": [0, { "anonymous": "always", "named": "always" }],
         "camelcase": 0,
         "no-return-assign": 0
     }
