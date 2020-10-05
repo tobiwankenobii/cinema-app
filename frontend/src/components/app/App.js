@@ -1,8 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import './App.scss';
-import Header from './components/header/header';
-import store from './redux/store';
+import Header from '../header/header';
+import store from '../../redux/store';
 
 const App = () => (
     <Provider store={store}>
