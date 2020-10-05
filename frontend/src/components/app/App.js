@@ -7,7 +7,7 @@ import store from '../../redux/store';
 const App = () => (
     <Provider store={store}>
         <Header></Header>
-        <div className="app">Redux set up successfully.</div>
+        <div className="app"></div>
     </Provider>
 );
 

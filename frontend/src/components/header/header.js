@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './header.scss'
+import { headerList } from './header-list.js'
+import logo from './cinema-logo.svg'
 
 const Header = () => {
     let [navClass, setNavClass] = useState(false)
@@ -23,9 +25,8 @@ const Header = () => {
             <div className="header-nav-wrapper">
                 <div className="header-bar"></div>
                 <div className="header-navbar">
-                    Cinema App
-                <div className="header-image">
-                        {/* <img src={logo} alt=""></img> */}
+                    <div className="header-image">
+                        <img src={logo} alt=""></img>
                     </div>
                     <div
                         className={`${menuClass ? 'header-menu-toggle is-active' : 'header-menu-toggle'}`}
@@ -37,8 +38,19 @@ const Header = () => {
                         <span className="bar"></span>
                     </div>
                     <ul className={`${menuClass ? 'header-nav header-mobile-nav' : 'header-nav'}`}>
-                        <li className="header-nav-item">Now playing</li>
-                        <li className="header-nav-item">New movies</li>
+                        {
+                            headerList.map(
+                                (item) => (
+                                    <li key={item.id} className="header-nav-item">
+                                        <span className="header-list-name">
+                                            <i className={item.iconClass}></i>
+                                        </span>
+                                        &nbsp;
+                                        <span>{item.name}</span>
+                                    </li>
+                                )
+                            )
+                        }
                         <input
                             className="search-input"
                             type="text"
