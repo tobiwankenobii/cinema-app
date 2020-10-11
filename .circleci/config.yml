@@ -10,7 +10,11 @@ executors:
     docker:
       - image: cibuilds/base:latest
     resource_class: small
-      
+  docker_publisher:
+    environment:
+      IMAGE_NAME: tobiwankenobii/cinema_app
+    docker:
+      - image: circleci/buildpack-deps:stretch
 
 aliases:
   - &show_current_branch
@@ -80,6 +84,28 @@ jobs:
           name: Run Prettier Check
           command: cd frontend && npm run prettier:check
 
+  publish_to_dockerhub:
+    executor: docker_publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *restore_cache
+      - run: docker login -u "${DOCKER_HUB_USER}" -p "${DOCKER_HUB_PASSWORD}"
+      - run: docker build -t "${IMAGE_NAME}":latest ./frontend
+      - run:
+          name: Publish to DockerHub
+          command: |
+            cd frontend
+            if [ "${CIRCLE_BRANCH}" == "production" ]
+            then
+              docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:stable-${CIRCLE_BUILD_NUM} && docker push ${IMAGE_NAME}:stable-${CIRCLE_BUILD_NUM}
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]
+            then
+              docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:staging-${CIRCLE_BUILD_NUM} && docker push ${IMAGE_NAME}:staging-${CIRCLE_BUILD_NUM}
+            else
+              docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:dev-${CIRCLE_BUILD_NUM} && docker push ${IMAGE_NAME}:dev-${CIRCLE_BUILD_NUM}
+            fi
+
   deploy_to_s3:
     executor: app_executor
     steps:
@@ -100,7 +126,7 @@ jobs:
             else
               aws --region ${AWS_REGION} s3 sync ~/project/frontend/build s3://${AWS_DEV_BUCKET} --delete
             fi
-          
+
   deploy_to_cloudfront:
     executor: app_executor
     steps:
@@ -121,8 +147,8 @@ jobs:
               aws cloudfront create-invalidation --distribution-id ${STAGING_DISTRIBUTION_ID} --paths /\*
             else
               aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
-            fi     
-     
+            fi
+
   notify_via_slack:
     executor: slack_executor
     steps:
@@ -142,7 +168,7 @@ workflows:
       - prettier:
           requires:
             - build
-      - deploy_to_s3:
+      - publish_to_dockerhub:
           requires:
             - linting
             - prettier
@@ -151,7 +177,16 @@ workflows:
               only:
                 - dev
                 - staging
-                - production 
+                - production
+      - deploy_to_s3:
+          requires:
+            - publish_to_dockerhub
+          filters:
+            branches:
+              only:
+                - dev
+                - staging
+                - production
       - deploy_to_cloudfront:
           requires:
             - deploy_to_s3
