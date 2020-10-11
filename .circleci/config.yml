@@ -95,7 +95,6 @@ jobs:
       - run:
           name: Publish to DockerHub
           command: |
-            cd frontend
             if [ "${CIRCLE_BRANCH}" == "production" ]
             then
               docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:stable-${CIRCLE_BUILD_NUM} && docker push ${IMAGE_NAME}:stable-${CIRCLE_BUILD_NUM}
