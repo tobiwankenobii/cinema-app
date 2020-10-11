@@ -8,10 +8,10 @@ WORKDIR /app
 COPY ./frontend /app
 
 # Install dependencies
-RUN cd frontend && npm install
+RUN npm install
 
 # Build production
-RUN cd frontend && npm build
+RUN npm build
 
 # Listen
 EXPOSE 3000
